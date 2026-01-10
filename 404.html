@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة غير موجودة - 404</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap');
+        body { font-family: 'Tajawal', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">
+    <div class="max-w-md w-full text-center">
+        <!-- 404 Icon -->
+        <div class="mb-8">
+            <div class="text-9xl font-bold text-orange-500">404</div>
+            <div class="text-2xl font-semibold text-gray-700 mt-4">صفحة غير موجودة</div>
+        </div>
+        
+        <!-- Message -->
+        <p class="text-gray-600 mb-8">
+            عذراً، الصفحة اللي تبحث عنها مش موجودة أو تم نقلها.
+        </p>
+        
+        <!-- Navigation Buttons -->
+        <div class="space-y-3">
+            <a href="/" class="block w-full bg-orange-500 text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors font-medium">
+                🏠 الصفحة الرئيسية
+            </a>
+            <a href="/menu.html" class="block w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                🍽️ قائمة الطعام
+            </a>
+            <a href="/admin.html" class="block w-full bg-gray-700 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors font-medium">
+                ⚙️ لوحة التحكم
+            </a>
+        </div>
+        
+        <!-- Help -->
+        <div class="mt-8 p-4 bg-white rounded-lg shadow-sm">
+            <h3 class="font-semibold text-gray-700 mb-2">🔍 روابط مفيدة:</h3>
+            <div class="text-sm text-gray-600 space-y-1">
+                <p>• <a href="/" class="text-blue-500 hover:underline">الصفحة الرئيسية</a></p>
+                <p>• <a href="/menu.html" class="text-blue-500 hover:underline">عرض القائمة</a></p>
+                <p>• <a href="/admin.html" class="text-blue-500 hover:underline">لوحة التحكم</a></p>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="mt-8 text-sm text-gray-500">
+            نظام إدارة المطاعم
+        </div>
+    </div>
+    
+    <!-- Auto-redirect after 10 seconds -->
+    <script>
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 10000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - إدارة المطعم</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #ea580c 0%, #d97706 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .login-body {
+            padding: 2.5rem 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .toggle-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            border-left: 4px solid #dc2626;
+            font-size: 0.9rem;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            border-left: 4px solid #16a34a;
+            font-size: 0.9rem;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .demo-credentials {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #78350f;
+        }
+
+        .demo-credentials p {
+            margin: 0.25rem 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .supabase-config {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .register-link a {
+            color: #f97316;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="logo">🍽️</div>
+                <h1>مرحباً بعودتك</h1>
+                <p>سجل دخولك لإدارة مطعمك</p>
+            </div>
+
+            <!-- Body -->
+            <div class="login-body">
+                <!-- Messages -->
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">البريد الإلكتروني</label>
+                        <input 
+                            type="email" 
+                            id="loginEmail" 
+                            placeholder="أدخل بريدك الإلكتروني"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">كلمة المرور</label>
+                        <div class="password-toggle">
+                            <input 
+                                type="password" 
+                                id="loginPassword" 
+                                placeholder="أدخل كلمة المرور"
+                                required
+                            >
+                            <span class="toggle-icon" onclick="togglePassword('loginPassword')">👁️</span>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">تذكرني</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="loginBtn">
+                        تسجيل الدخول
+                    </button>
+                </form>
+
+                <!-- Supabase Config (collapsible) -->
+                <details class="supabase-config">
+                    <summary style="cursor: pointer; font-weight: 600; color: #333;">⚙️ إعدادات Supabase</summary>
+                    <div style="margin-top: 1rem;">
+                        <div class="form-group">
+                            <label for="supabaseUrl">Supabase URL</label>
+                            <input 
+                                type="text" 
+                                id="supabaseUrl" 
+                                placeholder="https://your-project.supabase.co"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="supabaseKey">Supabase API Key</label>
+                            <input 
+                                type="password" 
+                                id="supabaseKey" 
+                                placeholder="your_api_key_here"
+                            >
+                            <small style="color: #666; display: block; margin-top: 0.25rem;">
+                                💾 سيتم حفظ الإعدادات في متصفحك
+                            </small>
+                        </div>
+                        <button type="button" onclick="saveSupabaseConfig()" class="submit-btn" style="margin-bottom: 0;">
+                            💾 حفظ الإعدادات
+                        </button>
+                    </div>
+                </details>
+
+                <!-- Demo Credentials -->
+                <div class="demo-credentials">
+                    <p>🎯 <strong>بيانات تجريبية:</strong></p>
+                    <p>📧 البريد: demo@restaurant.com</p>
+                    <p>🔐 كلمة المرور: demo123456</p>
+                </div>
+
+                <!-- Register Link -->
+                <div class="register-link">
+                    <p>ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialize config and database -->
+    <script src="config.js"></script>
+    <script src="database.js"></script>
+    <script src="login-script.js"></script>
+</body>
+</html>

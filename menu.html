@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<base href="/">
+<title>قائمة الطعام</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+theme: {
+screens: {
+'xs': '375px',
+'sm': '640px',
+'md': '768px',
+'lg': '1024px',
+'xl': '1280px',
+}
+}
+};
+</script>
+<style id="mainStyle">
+/* إضافة خط Tajawal للعربية */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap');
+:root {
+  --primary-color: #5bbfc6;
+  --primary-color-rgb: 91, 191, 198;
+  --secondary-color: #aee9f2;
+  --accent-color: #eafafd;
+  --card-background: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --rating-active: #5bbfc6;
+  --rating-inactive: #d1d5db;
+}
+/* ==================== ANIMATED CHEF CHARACTER ==================== */
+.chef-character {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 120px;
+    height: 140px;
+    z-index: 9999;
+    cursor: pointer;
+    animation: chefFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+}
+
+@keyframes chefFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+.chef-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* رأس الشيف */
+.chef-head {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background: #FFD6A5;
+    border-radius: 50%;
+    border: 3px solid #333;
+    animation: chefHeadBob 2s ease-in-out infinite;
+}
+
+@keyframes chefHeadBob {
+    0%, 100% { transform: translateX(-50%) translateY(0px); }
+    50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+/* قبعة الشيف */
+.chef-hat {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55px;
+    height: 35px;
+    background: white;
+    border: 3px solid #333;
+    border-radius: 20px 20px 5px 5px;
+    animation: chefHatWiggle 2.5s ease-in-out infinite;
+}
+
+.chef-hat::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 20px;
+    background: white;
+    border: 3px solid #333;
+    border-radius: 50%;
+}
+
+@keyframes chefHatWiggle {
+    0%, 100% { transform: translateX(-50%) rotate(0deg); }
+    25% { transform: translateX(-50%) rotate(-3deg); }
+    75% { transform: translateX(-50%) rotate(3deg); }
+}
+
+/* عيون الشيف */
+.chef-eyes {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chef-eye {
+    width: 8px;
+    height: 8px;
+    background: #333;
+    border-radius: 50%;
+    animation: chefBlink 4s infinite;
+}
+
+@keyframes chefBlink {
+    0%, 48%, 52%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.1); }
+}
+
+/* فم الشيف */
+.chef-mouth {
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 10px;
+    border: 2px solid #333;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    animation: chefSmile 3s ease-in-out infinite;
+}
+
+@keyframes chefSmile {
+    0%, 100% { width: 20px; }
+    50% { width: 25px; }
+}
+
+/* جسم الشيف */
+.chef-torso {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 50px;
+    background: white;
+    border: 3px solid #333;
+    border-radius: 10px;
+}
+
+/* أزرار البدلة */
+.chef-button {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #fbbf24;
+    border: 2px solid #333;
+    border-radius: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.chef-button:nth-child(1) { top: 10px; }
+.chef-button:nth-child(2) { top: 25px; }
+
+/* أيدي الشيف */
+.chef-arm {
+    position: absolute;
+    top: 70px;
+    width: 15px;
+    height: 40px;
+    background: #FFD6A5;
+    border: 3px solid #333;
+    border-radius: 10px;
+}
+
+.chef-arm-left {
+    left: 10px;
+    animation: chefArmWaveLeft 2s ease-in-out infinite;
+    transform-origin: top center;
+}
+
+.chef-arm-right {
+    right: 10px;
+    animation: chefArmWaveRight 2s ease-in-out infinite;
+    transform-origin: top center;
+}
+
+@keyframes chefArmWaveLeft {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(-25deg); }
+}
+
+@keyframes chefArmWaveRight {
+    0%, 100% { transform: rotate(10deg); }
+    50% { transform: rotate(25deg); }
+}
+
+/* ملعقة في اليد */
+.chef-spoon {
+    position: absolute;
+    right: 5px;
+    top: 75px;
+    width: 25px;
+    height: 4px;
+    background: #888;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    animation: chefSpoonStir 2s ease-in-out infinite;
+}
+
+.chef-spoon::before {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: -4px;
+    width: 12px;
+    height: 12px;
+    background: #aaa;
+    border: 2px solid #333;
+    border-radius: 50%;
+}
+
+@keyframes chefSpoonStir {
+    0%, 100% { transform: rotate(45deg); }
+    50% { transform: rotate(60deg); }
+}
+
+/* فقاعات الطبخ */
+.cooking-bubble {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(251, 191, 36, 0.6);
+    border: 2px solid #fbbf24;
+    border-radius: 50%;
+    animation: bubbleRise 3s ease-in-out infinite;
+}
+
+.cooking-bubble:nth-child(1) {
+    left: 30%;
+    animation-delay: 0s;
+}
+
+.cooking-bubble:nth-child(2) {
+    left: 50%;
+    animation-delay: 1s;
+}
+
+.cooking-bubble:nth-child(3) {
+    left: 70%;
+    animation-delay: 2s;
+}
+
+@keyframes bubbleRise {
+    0% {
+        bottom: 20px;
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        bottom: 160px;
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+
+/* تفاعل عند التحويم */
+.chef-character:hover {
+    animation: chefExcited 0.5s ease-in-out;
+}
+
+@keyframes chefExcited {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(-5deg); }
+    50% { transform: translateY(-25px) rotate(5deg); }
+    75% { transform: translateY(-20px) rotate(-5deg); }
+}
+
+.chef-character:hover .chef-hat {
+    animation: chefHatBounce 0.5s ease-in-out;
+}
+
+@keyframes chefHatBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-10px); }
+}
+
+/* إخفاء الشيف على الشاشات الصغيرة */
+@media (max-width: 768px) {
+    .chef-character {
+        width: 80px;
+        height: 100px;
+        bottom: 10px;
+        left: 10px;
+    }
+    .chef-head { width: 35px; height: 35px; }
+    .chef-hat { width: 40px; height: 25px; }
+    .chef-torso { width: 45px; height: 40px; }
+    .chef-arm { width: 12px; height: 30px; }
+    .chef-spoon { width: 20px; top: 60px; }
+}
+
+@media (max-width: 480px) {
+    .chef-character {
+        width: 60px;
+        height: 80px;
+    }
+}
+</style>
+
+
+<script>
+// حقن CSS مخصص من إعدادات المطعم
+document.addEventListener('DOMContentLoaded', async function() {
+	// ...existing code...
+	// بعد تحميل الإعدادات (settings)
+	if (typeof fetchAPI === 'function' && typeof restaurantId !== 'undefined') {
+		try {
+			const settingsData = await fetchAPI(`restaurant_settings?restaurant_id=eq.${restaurantId}`);
+			if (settingsData.length > 0 && settingsData[0].custom_css) {
+				let styleTag = document.getElementById('mainStyle');
+				if (!styleTag) {
+					styleTag = document.createElement('style');
+					styleTag.id = 'mainStyle';
+					document.head.appendChild(styleTag);
+				}
+				styleTag.innerHTML += '\n' + settingsData[0].custom_css;
+			}
+		} catch(e) { /* ignore */ }
+	}
+});
+</script>
+<style>
+/* ==================== CATEGORY CARDS GRID ==================== */
+.categories-section {
+padding: 1.5rem 0;
+background: #fff;
+border-bottom: 1px solid var(--border-color);
+}
+.category-grid {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	gap: 2rem;
+	padding: 2rem 0 2rem 0;
+	overflow-x: auto;
+	max-width: 100vw;
+	margin: 0 auto;
+	scrollbar-color: var(--rating-active) #fffbe6;
+	scrollbar-width: thin;
+}
+/* مظهر شريط التمرير للسكرول */
+.category-grid::-webkit-scrollbar {
+	height: 10px;
+	background: #fffbe6;
+	border-radius: 8px;
+}
+.category-grid::-webkit-scrollbar-thumb {
+	background: var(--rating-active);
+	border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+.category-grid {
+gap: 1.25rem;
+padding: 1.5rem;
+max-width: 100%;
+}
+}
+@media (max-width: 640px) {
+.category-grid {
+gap: 1rem;
+padding: 1rem;
+}
+}
+.category-card {
+	background: linear-gradient(135deg, #fffbe6 0%, #fff7ed 100%);
+	border: 2.5px solid var(--primary-color);
+	border-radius: 1.7rem;
+	box-shadow: 0 8px 32px 0 rgba(251,191,36,0.16), 0 2px 8px 0 rgba(0,0,0,0.07);
+	transition: box-shadow 0.28s cubic-bezier(.4,2,.6,1), transform 0.22s cubic-bezier(.4,2,.6,1), border-color 0.22s, background 0.22s;
+	cursor: pointer;
+	overflow: visible;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 0;
+	position: relative;
+	height: 380px;
+	box-shadow: 0 8px 32px 0 rgba(251,191,36,0.16), 0 2px 8px 0 rgba(0,0,0,0.07);
+	border: 3.5px solid palegreen;
+	position: relative;
+}
+.category-card::before, .category-card::after {
+	content: '';
+	position: absolute;
+	width: 48px;
+	height: 48px;
+	background: radial-gradient(circle at 70% 30%, #fbbf24 60%, transparent 100%);
+	opacity: 0.18;
+	z-index: 1;
+	pointer-events: none;
+	border-radius: 50%;
+}
+.category-card::before {
+	top: -18px;
+	left: -18px;
+	box-shadow: 0 0 18px 6px #fbbf2444;
+}
+.category-card::after {
+	bottom: -18px;
+	right: -18px;
+	background: radial-gradient(circle at 30% 70%, #f59e0b 60%, transparent 100%);
+	box-shadow: 0 0 18px 6px #f59e0b44;
+}
+.category-card {
+	min-width: 220px;
+	max-width: 220px;
+	width: 100%;
+	margin: 0 auto;
+	box-sizing: border-box;
+	opacity: 1;
+}
+.category-card:hover, .category-card.active {
+	border-color: #f59e0b;
+	box-shadow: 0 24px 48px 0 rgba(251,191,36,0.22), 0 4px 16px 0 rgba(0,0,0,0.09);
+	background: rgba(255,255,255,0.92);
+	background-image: linear-gradient(120deg, #fffbe6 0%, #fff7ed 100%);
+	transform: translateY(-10px) scale(1.045) rotate(-1deg);
+}
+.category-image-wrapper {
+	width: 100%;
+	height: 300px;
+	border-radius: 2rem 2rem 0 0;
+	overflow: hidden;
+	position: relative;
+	background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	border-bottom: 1.5px solid #fbbf24;
+}
+.category-image-wrapper img {
+	width: 100%;
+	height: 100%;
+	object-fit: inherit;
+	transition: transform 0.32s cubic-bezier(.4,2,.6,1), filter 0.32s cubic-bezier(.4,2,.6,1);
+	border-radius: 2rem 2rem 0 0;
+}
+.category-card:hover .category-image-wrapper img {
+	transform: scale(1.10) rotate(-1.5deg);
+	filter: brightness(1.12) saturate(1.18) drop-shadow(0 2px 8px #fbbf2433);
+}
+.category-info {
+		position: relative;
+		min-height: 60px;
+	width: 100%;
+	padding: 1.1rem 1.2rem 0.7rem 1.2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+.category-name {
+		filter: drop-shadow(0 1px 0 #fffbe6) drop-shadow(0 2px 8px #fbbf2422);
+	}
+	/* شارة عدد المنتجات */
+	.category-badge {
+		position: absolute;
+		top: 12px;
+		left: 12px;
+		background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+		color: #fff;
+		padding: 0.35rem 1rem;
+		border-radius: 9999px;
+		font-size: 0.98rem;
+		font-weight: 800;
+		min-width: 2.2rem;
+		text-align: center;
+		box-shadow: 0 4px 12px rgba(251,191,36,0.18);
+		border: 2px solid #fffbe6;
+		z-index: 2;
+		letter-spacing: 0.5px;
+		animation: badge-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+	/* تحسين أيقونة الفئة */
+	.category-icon {
+		font-size: 2.7rem;
+		color: #fbbf24;
+		filter: drop-shadow(0 2px 8px #fbbf2433);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+	}
+	.category-card:hover .category-icon {
+border-radius: 2rem 2rem 0 0; /* حواف فقط في الأعلى */
+overflow: hidden;
+position: relative;
+background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+display: flex;
+flex-direction: column;
+justify-content: center;
+padding: 1.25rem 1.5rem; /* تقليل الـ padding */
+flex: 1;
+width: 100%;
+}
+.category-name {
+font-weight: 800; /* تقليل السمك قليلاً */
+font-size: 1.25rem; /* تقليل الحجم قليلاً */
+color: var(--text-primary);
+text-align: center; /* محاذاة في المنتصف */
+margin-bottom: 0.5rem; /* تقليل الهامش */
+line-height: 1.3;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+overflow: hidden;
+}
+/* ==================== FILTERS SECTION ==================== */
+.filters-section {
+background: var(--card-background);
+border-radius: 1.25rem;
+box-shadow: 0 4px 20px var(--shadow-color);
+margin: 1.5rem;
+overflow: hidden;
+transition: all 0.3s ease;
+border: 1px solid var(--border-color);
+}
+.filters-header {
+padding: 1.25rem;
+background: var(--accent-color);
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid var(--border-color);
+transition: all 0.3s ease;
+}
+.filters-header:hover {
+background: var(--border-color);
+}
+.category-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 2rem 0;
+}
+.filter-counter {
+	font-weight: 700;
+	min-width: 1.5rem;
+	text-align: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+.filter-group {
+margin-bottom: 1.5rem;
+}
+.filter-group:last-child {
+margin-bottom: 0;
+}
+.filter-label {
+font-weight: 700;
+color: var(--text-primary);
+margin-bottom: 0.75rem;
+display: block;
+font-size: 0.95rem;
+background: linear-gradient(135deg, var(--primary-color), #f59e0b);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.filter-options {
+display: flex;
+flex-wrap: wrap;
+gap: 0.75rem;
+}
+.filter-btn {
+background: var(--card-background);
+border: 2px solid var(--border-color);
+padding: 0.5rem 1rem;
+border-radius: 9999px;
+cursor: pointer;
+font-size: 0.9rem;
+font-weight: 600;
+color: var(--text-secondary);
+transition: all 0.3s ease;
+white-space: nowrap;
+}
+.filter-btn:hover {
+border-color: var(--primary-color);
+color: var(--primary-color);
+background: rgba(var(--primary-color-rgb), 0.05);
+}
+.filter-btn.active {
+background: linear-gradient(135deg, var(--primary-color), #f59e0b);
+color: white;
+border-color: transparent;
+box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
+}
+/* ==================== SECTION GROUPS ==================== */
+.section-group {
+margin-bottom: 2rem; /* تقليل الهامش */
+animation: fadeInUp 0.6s ease-out both;
+}
+.section-title {
+font-size: 1.25rem; /* تقليل الحجم */
+font-weight: 700; /* تقليل السمك */
+color: var(--text-primary);
+margin-bottom: 1rem; /* تقليل الهامش */
+padding: 0.75rem 1.25rem; /* تقليل الـ padding */
+background: var(--accent-color);
+border-radius: 0.75rem; /* تقليل نصف القطر */
+box-shadow: 0 4px 12px var(--shadow-color);
+position: relative;
+overflow: hidden;
+animation: slideInRight 0.5s ease-out;
+display: inline-block; /* لجعله يحتوي على المحتوى فقط */
+}
+/* ==================== PRODUCTS GRID ==================== */
+.products-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 1.25rem; /* تقليل الفجوة */
+padding: 0 1.25rem; /* تقليل الـ padding */
+}
+@media (max-width: 768px) {
+.products-grid {
+grid-template-columns: 1fr;
+padding: 0 1rem;
+}
+}
+/* ==================== PRODUCT CARD ==================== */
+.product-card {
+	background: var(--card-background);
+	border-radius: 1.25rem;
+	box-shadow: 0 8px 32px var(--shadow-color);
+	transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+	overflow: hidden;
+	display: flex;
+	flex-direction: row-reverse;
+	animation: fadeInUp 0.6s ease-out both;
+	border: 1.5px solid var(--border-color);
+	position: relative;
+}
+.product-card:hover {
+	transform: translateY(-8px) scale(1.03) rotate(0.5deg);
+	box-shadow: 0 24px 48px var(--shadow-hover);
+	border-color: var(--primary-color);
+	background: linear-gradient(120deg, #fffbe6 0%, #fff7ed 100%);
+}
+.product-image {
+position: relative;
+width: 40%; /* تقليل عرض الصورة */
+min-height: 160px; /* تقليل الارتفاع */
+overflow: hidden;
+background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.product-image img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+transition: transform 0.3s ease;
+}
+.product-card:hover .product-image img {
+transform: scale(1.05);
+}
+.fallback-thumb {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.15), rgba(var(--primary-color-rgb), 0.05));
+font-size: 2.5rem; /* تقليل حجم الأيقونة */
+color: var(--secondary-color);
+}
+.badge-featured {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+	color: #fff;
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 0.25rem 0.8rem;
+	border-radius: 9999px;
+	box-shadow: 0 6px 18px rgba(var(--primary-color-rgb), 0.18);
+	z-index: 10;
+	border: 2px solid #fffbe6;
+	letter-spacing: 0.5px;
+	animation: badge-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.product-content {
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+padding: 1.25rem; /* تقليل الـ padding */
+flex: 1;
+color: #e8e8e8;
+}
+.product-header {
+margin-bottom: 0.5rem; /* تقليل الهامش */
+color: #333;
+}
+.product-name {
+font-size: 1rem; /* تقليل الحجم */
+font-weight: 700; /* تقليل السمك */
+color: var(--text-primary);
+margin-bottom: 0.25rem;
+line-height: 1.3;
+}
+.product-name-en {
+font-size: 0.8rem; /* تقليل الحجم */
+color: var(--text-secondary);
+font-weight: 500;
+margin-bottom: 0.5rem;
+}
+.product-description {
+font-size: 0.8rem; /* تقليل الحجم */
+color: var(--text-secondary);
+line-height: 1.4; /* تحسين ارتفاع السطر */
+margin-bottom: 0.75rem; /* تقليل الهامش */
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+overflow: hidden;
+}
+.product-footer {
+display: flex;
+justify-content: space-between;
+align-items: center; /* محاذاة في المنتصف */
+}
+.price-chip {
+background: rgba(var(--primary-color-rgb), 0.1); /* لون شفاف */
+color: var(--primary-color); /* لون نص فقط */
+border-radius: 9999px;
+padding: 0.3rem 0.8rem; /* تقليل الـ padding */
+font-weight: 800; /* زيادة السمك */
+font-size: 0.9rem; /* تقليل الحجم */
+box-shadow: inset 0 0 0 1px var(--primary-color); /* حدود داخلية */
+white-space: nowrap;
+}
+/* ==================== ANIMATIONS ==================== */
+@keyframes scaleIn {
+from {
+opacity: 0;
+transform: scale(0.9);
+}
+to {
+opacity: 1;
+transform: scale(1);
+}
+}
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(30px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+@keyframes fadeIn {
+from {
+opacity: 0;
+transform: translateY(20px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+@keyframes slideInRight {
+from {
+opacity: 0;
+transform: translateX(-30px);
+}
+to {
+opacity: 1;
+transform: translateX(0);
+}
+}
+@keyframes bounce {
+0%, 100% {
+transform: translateY(0);
+}
+50% {
+transform: translateY(-8px);
+}
+}
+@keyframes pulse {
+0%, 100% {
+opacity: 1;
+}
+50% {
+opacity: 0.7;
+}
+}
+@keyframes shimmer {
+0% {
+transform: rotate(0deg);
+opacity: 0;
+}
+50% {
+opacity: 0.3;
+}
+100% {
+transform: rotate(360deg);
+opacity: 0;
+}
+}
+@keyframes badge-pop {
+0% {
+transform: scale(0.8);
+opacity: 0;
+}
+50% {
+transform: scale(1.1);
+}
+100% {
+transform: scale(1);
+opacity: 1;
+}
+}
+/* ==================== EMPTY STATE ==================== */
+#emptyState {
+text-align: center;
+padding: 3rem 2rem; /* تقليل الـ padding */
+animation: fadeIn 0.6s ease-out;
+}
+#emptyState svg {
+margin: 0 auto 1rem; /* تقليل الهامش */
+width: 80px; /* تقليل الحجم */
+height: 80px;
+}
+#emptyStateMessage {
+font-size: 1.1rem; /* تقليل الحجم */
+font-weight: 600; /* تقليل السمك */
+color: var(--text-primary);
+margin-bottom: 0.25rem; /* تقليل الهامش */
+}
+#emptyState > p:last-child {
+color: var(--text-secondary);
+font-size: 0.85rem; /* تقليل الحجم */
+}
+/* ==================== LOADING SCREEN ==================== */
+.loading-screen {
+position: fixed;
+inset: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 50;
+background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.95), rgba(var(--primary-color-rgb), 0.85));
+backdrop-filter: blur(10px);
+}
+.loading-screen.hidden {
+display: none;
+}
+.loading-spinner {
+position: relative;
+width: 60px;
+height: 60px;
+margin-bottom: 1.5rem;
+}
+.loading-spinner::after {
+content: '';
+position: absolute;
+width: 60px;
+height: 60px;
+border: 4px solid rgba(255, 255, 255, 0.2);
+border-top-color: white;
+border-radius: 50%;
+animation: spin 1.2s linear infinite;
+}
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+.loading-screen p {
+color: white;
+font-size: 1rem; /* تقليل الحجم */
+font-weight: 500; /* تقليل السمك */
+letter-spacing: 0.5px;
+}
+/* ==================== HEADER & LOGO ==================== */
+#menuHeader {
+	background: linear-gradient(90deg, #fffbe6 0%, #fff7ed 100%);
+	backdrop-filter: blur(10px);
+	border-bottom: 2px solid var(--primary-color);
+	box-shadow: 0 8px 32px var(--shadow-color);
+}
+#headerAccent {
+	height: 4px;
+	background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color)	 100%);
+	border-radius: 2px;
+}
+#logoWrapper {
+background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+backdrop-filter: blur(8px);
+animation: logoFloat 3s ease-in-out infinite;
+width: 100px; /* تحديد العرض */
+height: 100px; /* تحديد الارتفاع */
+border-radius: 50%;
+overflow: hidden;
+margin-top: 8px; /* تعديل الهامش */
+}
+#restaurantName {
+text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* تقليل ظل النص */
+letter-spacing: -0.25px; /* تعديل مسافة الحروف */
+color: var(--primary-color);
+}
+@keyframes logoFloat {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-2px); }
+}
+/* ==================== BUTTONS ==================== */
+.action-button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 0.25rem;
+padding: 0.375rem 0.75rem;
+border-radius: 9999px;
+font-weight: 600;
+color: white;
+font-size: 0.75rem;
+transition: all 0.3s ease;
+box-shadow: 0 4px 6px var(--shadow-color);
+background-color: var(--primary-color);
+}
+@media (min-width: 640px) {
+.action-button {
+gap: 0.5rem;
+padding: 0.5rem 1rem;
+font-size: 0.875rem;
+}
+}
+@media (min-width: 768px) {
+.action-button {
+padding: 0.625rem 1.25rem;
+font-size: 1rem;
+}
+}
+.action-button:hover {
+background-color: #B45309; /* لون أغمق عند التحويم */
+}
+.whatsapp-button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 0.25rem;
+padding: 0.375rem 0.75rem;
+border-radius: 9999px;
+font-weight: 600;
+color: white;
+font-size: 0.75rem;
+background-color: #22c55e;
+transition: all 0.3s ease;
+box-shadow: 0 4px 6px var(--shadow-color);
+}
+.whatsapp-button:hover {
+background-color: #16a34a;
+}
+@media (min-width: 640px) {
+.whatsapp-button {
+gap: 0.5rem;
+padding: 0.5rem 1rem;
+font-size: 0.875rem;
+}
+}
+@media (min-width: 768px) {
+.whatsapp-button {
+padding: 0.625rem 1.25rem;
+font-size: 1rem;
+}
+}
+/* ==================== REVIEWS MODAL ==================== */
+.review-star {
+cursor: pointer;
+transition: transform 0.2s ease, filter 0.2s ease;
+color: var(--rating-inactive);
+opacity: 0.7;
+}
+.review-star:hover {
+transform: scale(1.2);
+opacity: 1;
+}
+.review-star.active {
+color: var(--rating-active);
+opacity: 1;
+transform: scale(1.2);
+}
+.review-item {
+border-left: 4px solid var(--primary-color);
+border-radius: 0.5rem;
+padding: 1rem;
+background: var(--accent-color);
+margin-bottom: 1rem;
+}
+.review-rating {
+display: inline-flex;
+gap: 1px; /* تقليل الفجوة */
+font-size: 0.8rem; /* تقليل حجم النص */
+}
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 640px) {
+.category-grid {
+grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+gap: 0.75rem;
+padding: 1rem;
+}
+.products-grid {
+grid-template-columns: 1fr;
+gap: 1rem;
+padding: 0 1rem;
+}
+.section-title {
+font-size: 1.1rem; /* تقليل الحجم */
+padding: 0.6rem 1rem; /* تقليل الـ padding */
+margin-bottom: 0.75rem;
+}
+.product-image {
+width: 35%; /* تقليل عرض الصورة */
+min-height: 120px; /* تقليل الارتفاع */
+}
+.product-content {
+padding: 1rem; /* تقليل الـ padding */
+}
+.product-name {
+font-size: 0.95rem; /* تقليل الحجم */
+}
+.product-description {
+font-size: 0.75rem; /* تقليل الحجم */
+margin-bottom: 0.5rem; /* تقليل الهامش */
+}
+.price-chip {
+font-size: 0.85rem; /* تقليل الحجم */
+padding: 0.25rem 0.7rem; /* تقليل الـ padding */
+}
+.filters-section {
+margin: 1rem;
+border-radius: 1rem;
+}
+.filters-header {
+padding: 1rem;
+}
+#restaurantName {
+font-size: 1.5rem; /* تقليل الحجم */
+}
+}
+@media (min-width: 641px) and (max-width: 1024px) {
+.category-grid {
+grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+gap: 1rem;
+padding: 1.25rem;
+}
+.products-grid {
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+}
+.fade-in { animation: fadeIn 0.5s ease-in; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="min-h-screen">
+<!-- Loading Screen -->
+<div id="loadingScreen" class="loading-screen">
+<div class="text-center text-white">
+<div class="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mx-auto mb-4"></div>
+<p class="text-xl font-semibold">جاري تحميل القائمة...</p>
+</div>
+</div>
+
+
+    <!-- شخصية الشيف -->
+    <div class="chef-character">
+        <!-- فقاعات الطهي -->
+        <div class="cooking-bubble"></div>
+        <div class="cooking-bubble"></div>
+        <div class="cooking-bubble"></div>
+        
+        <!-- صورة الشيف -->
+        <!-- استبدل رابط الصورة برابط صورة حقيقية -->
+        <img src="./unnamed-removebg-preview.png" alt="شخصية الشيف" class="chef-image" style="    max-width: 150%;
+    height: auto;">
+    </div>
+<!-- Header -->
+<header id="menuHeader" class="sticky top-0 z-40 shadow-md"> <!-- تقليل shadow -->
+<div id="headerAccent"></div>
+<div class="container mx-auto px-4 py-3"> <!-- إضافة container و padding -->
+<div class="flex flex-col items-center text-center gap-2 mb-3"> <!-- تغيير flex-direction -->
+<!-- Logo with better styling -->
+<div id="logoWrapper" class="flex-shrink-0">
+<img id="restaurantLogo" src="" alt="شعار المطعم" class="w-full h-full object-cover">
+<div class="absolute inset-0 rounded-full border-2 border-white" style="box-shadow: inset 0 0 0 1px rgba(var(--primary-color-rgb), 0.2);"></div>
+</div>
+<!-- Restaurant Name -->
+<div class="text-center"> <!-- محاذاة في المنتصف -->
+<h1 id="restaurantName" class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black" style="color: var(--primary-color);">قائمة الطعام</h1>
+<p id="restaurantTagline" class="text-xs sm:text-sm text-gray-500 mt-1 font-medium"></p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap gap-2 justify-center w-full mt-2"> <!-- إضافة mt-2 -->
+<button onclick="openReviewsModal()" class="action-button">
+<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+</svg>
+<span class="hidden xs:inline">اترك رأيك</span>
+</button>
+<a id="whatsappBtnHeader" data-whatsapp-btn href="#" target="_blank" class="whatsapp-button">
+<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.14 1.732 3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+</svg>
+<span class="hidden xs:inline">واتساب</span>
+</a>
+</div>
+<!-- Social Media Icons -->
+<div id="socialMediaIcons" class="flex gap-1.5 sm:gap-2 md:gap-3 justify-center mt-2 hidden">
+<a id="facebookBtn" href="#" target="_blank" title="فيسبوك" class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 duration-200" style="background-color: #1877F2;">
+<svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+</svg>
+</a>
+<a id="instagramBtn" href="#" target="_blank" title="إنستجرام" class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 duration-200 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">
+<svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.322a1.44 1.44 0 11.806-2.806 1.44 1.44 0 01-.806 2.806z"/>
+</svg>
+</a>
+<a id="tiktokBtn" href="#" target="_blank" title="تيك توك" class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 duration-200 bg-black">
+<svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.66 1.94 2.89 2.89 0 0 1 5.66-1.94v-3.72a6.1 6.1 0 0 0-3.2-.93 6.1 6.1 0 1 0 6.2 6.1V6.69z"/>
+</svg>
+</a>
+</div>
+</div>
+<!-- Search Bar - Hidden on categories view -->
+<div class="relative mb-3 md:mb-4 hidden">
+<svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+</svg>
+<input
+type="text"
+id="searchInput"
+placeholder="ابحث..."
+class="w-full pr-10 pl-4 py-2 md:py-3 border-2 border-gray-200 rounded-lg md:rounded-xl focus:border-[var(--primary-color)] focus:outline-none transition-colors text-sm md:text-base"
+>
+</div>
+<!-- Advanced Filters Section - Hidden on categories view -->
+<div class="filters-section hidden">
+<div class="filters-header" onclick="toggleFilters()">
+<div class="flex items-center gap-2">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+</svg>
+<span class="font-semibold text-gray-700">الفلاتر المتقدمة</span>
+<span id="filterCounter" class="filter-counter hidden">0</span>
+</div>
+<svg id="filterToggleIcon" class="w-5 h-5 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+</svg>
+</div>
+<div id="filtersContent" class="filters-content">
+<div class="space-y-4">
+<!-- Subsections Dropdown -->
+<div id="subsectionFilter" class="hidden">
+<label class="block text-sm font-medium text-gray-700 mb-2">القسم الفرعي</label>
+<select id="subsectionSelect" onchange="selectSubsection(this.value)" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[var(--primary-color)] focus:outline-none transition-colors">
+<option value="">جميع الأقسام</option>
+</select>
+</div>
+<!-- Additional filters can be added here -->
+<div class="flex gap-2">
+<button onclick="clearAllFilters()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+مسح الكل
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Categories Grid -->
+<div class="mt-2 md:mt-4 pb-6">
+<div id="categoriesContainer" class="category-grid"></div>
+</div>
+</div>
+</header>
+<!-- Products View - Hidden by default -->
+<main id="productsView" class="hidden">
+<!-- Back Button and Category Title -->
+<div class="sticky top-0 z-30 bg-white shadow-sm"> <!-- تقليل shadow -->
+<div class="max-w-7xl mx-auto px-3 md:px-6 py-3 flex items-center justify-between"> <!-- تقليل padding -->
+<button onclick="backToCategories()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors font-medium text-gray-700 text-sm"> <!-- تقليل حجم النص والـ padding -->
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+</svg>
+رجوع
+</button>
+<h2 id="selectedCategoryTitle" class="text-xl md:text-2xl font-bold" style="color: var(--primary-color);"> <!-- تقليل حجم النص -->
+</h2>
+<div style="width: 100px;"></div>
+</div>
+</div>
+<!-- Products Grid -->
+<div class="max-w-7xl mx-auto px-3 md:px-6 py-4 md:py-6"> <!-- تقليل padding -->
+<div id="productsContainer" class="space-y-4 md:space-y-6"></div> <!-- تقليل space -->
+<!-- Empty State -->
+<div id="emptyState" class="hidden text-center py-8 md:py-12 space-y-2"> <!-- تقليل padding -->
+<svg class="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <!-- تقليل الحجم -->
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+</svg>
+<p id="emptyStateMessage" class="text-gray-500 text-sm md:text-base font-medium"> <!-- تقليل حجم النص -->
+لا توجد منتجات متاحة
+</p>
+<p class="text-xs md:text-sm text-gray-400"> <!-- تقليل حجم النص -->
+جرّب تعديل الفئة أو البحث عن كلمة مختلفة.
+</p>
+</div>
+</div>
+</main>
+<!-- Reviews Modal -->
+<div id="reviewsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+<div class="bg-white rounded-xl shadow-xl max-w-2xl w-full my-4 sm:my-8 max-h-[90vh] overflow-y-auto"> <!-- تقليل border-radius -->
+<!-- Close Button -->
+<div class="sticky top-0 flex justify-between items-center p-3 sm:p-4 border-b bg-white rounded-t-xl"> <!-- تقليل padding -->
+<h2 class="text-lg sm:text-xl font-bold" style="color: var(--primary-color);"> <!-- تقليل حجم النص -->
+⭐ التقييمات والآراء
+</h2>
+<button onclick="closeReviewsModal()" class="text-gray-500 hover:text-gray-700 text-xl w-7 h-7 flex items-center justify-center">&times;</button> <!-- تقليل حجم النص والزر -->
+</div>
+<!-- Tabs -->
+<div class="flex border-b overflow-x-auto">
+<button onclick="switchReviewTab('add')" id="reviewTabAdd" class="flex-1 px-2 sm:px-4 py-2 sm:py-3 font-semibold border-b-2 text-sm sm:text-base whitespace-nowrap" style="border-color: var(--primary-color); color: var(--primary-color);">
+✏️ أضف تقييم
+</button>
+<button onclick="switchReviewTab('view')" id="reviewTabView" class="flex-1 px-2 sm:px-4 py-2 sm:py-3 font-semibold text-gray-600 border-b-2 border-transparent text-sm sm:text-base whitespace-nowrap">
+👁️ عرض التقييمات
+</button>
+</div>
+<!-- Add Review Tab -->
+<div id="reviewAddTab" class="p-3 sm:p-4 space-y-2 sm:space-y-4"> <!-- تقليل padding -->
+<h3 class="font-semibold text-sm sm:text-base text-gray-800"> <!-- تقليل حجم النص -->
+معلوماتك الشخصية
+</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2"> <!-- تقليل gap -->
+<input type="text" id="reviewName" placeholder="اسمك *" class="px-2 sm:px-3 py-1.5 sm:py-2 border-2 rounded-lg focus:border-[var(--primary-color)] focus:outline-none text-xs sm:text-sm" required> <!-- تقليل حجم النص والـ padding -->
+<input type="tel" id="reviewPhone" placeholder="رقم الهاتف *" class="px-2 sm:px-3 py-1.5 sm:py-2 border-2 rounded-lg focus:border-[var(--primary-color)] focus:outline-none text-xs sm:text-sm" required>
+<input type="text" id="reviewGovernorate" placeholder="المحافظة *" class="px-2 sm:px-3 py-1.5 sm:py-2 border-2 rounded-lg focus:border-[var(--primary-color)] focus:outline-none text-xs sm:text-sm" required>
+<input type="text" id="reviewCity" placeholder="المدينة *" class="px-2 sm:px-3 py-1.5 sm:py-2 border-2 rounded-lg focus:border-[var(--primary-color)] focus:outline-none text-xs sm:text-sm" required>
+</div>
+<hr>
+<h3 class="font-semibold text-sm sm:text-base text-gray-800"> <!-- تقليل حجم النص -->
+تقييماتك
+</h3>
+<!-- Place Rating -->
+<div>
+<label class="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-gray-700"> <!-- تقليل الهامش -->
+تقييم المكان 🏪
+</label>
+<div class="flex gap-1 sm:gap-2" id="placeRatingContainer"> <!-- تقليل gap -->
+<button onclick="setRating('place', 1)" class="review-star text-lg sm:text-xl" data-value="1">⭐</button>
+<button onclick="setRating('place', 2)" class="review-star text-lg sm:text-xl" data-value="2">⭐</button>
+<button onclick="setRating('place', 3)" class="review-star text-lg sm:text-xl" data-value="3">⭐</button>
+<button onclick="setRating('place', 4)" class="review-star text-lg sm:text-xl" data-value="4">⭐</button>
+<button onclick="setRating('place', 5)" class="review-star text-lg sm:text-xl" data-value="5">⭐</button>
+</div>
+<p id="placeRatingText" class="text-xs sm:text-sm text-gray-500 mt-1"> <!-- تقليل الهامش -->
+لم يتم اختيار تقييم
+</p>
+</div>
+<!-- Products Rating -->
+<div>
+<label class="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-gray-700"> <!-- تقليل الهامش -->
+تقييم المنتجات 🍽️
+</label>
+<div class="flex gap-1 sm:gap-2" id="productsRatingContainer"> <!-- تقليل gap -->
+<button onclick="setRating('products', 1)" class="review-star text-lg sm:text-xl" data-value="1">⭐</button>
+<button onclick="setRating('products', 2)" class="review-star text-lg sm:text-xl" data-value="2">⭐</button>
+<button onclick="setRating('products', 3)" class="review-star text-lg sm:text-xl" data-value="3">⭐</button>
+<button onclick="setRating('products', 4)" class="review-star text-lg sm:text-xl" data-value="4">⭐</button>
+<button onclick="setRating('products', 5)" class="review-star text-lg sm:text-xl" data-value="5">⭐</button>
+</div>
+<p id="productsRatingText" class="text-xs sm:text-sm text-gray-500 mt-1"> <!-- تقليل الهامش -->
+لم يتم اختيار تقييم
+</p>
+</div>
+<!-- Service Rating -->
+<div>
+<label class="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-gray-700"> <!-- تقليل الهامش -->
+تقييم المعاملة 😊
+</label>
+<div class="flex gap-1 sm:gap-2" id="serviceRatingContainer"> <!-- تقليل gap -->
+<button onclick="setRating('service', 1)" class="review-star text-lg sm:text-xl" data-value="1">⭐</button>
+<button onclick="setRating('service', 2)" class="review-star text-lg sm:text-xl" data-value="2">⭐</button>
+<button onclick="setRating('service', 3)" class="review-star text-lg sm:text-xl" data-value="3">⭐</button>
+<button onclick="setRating('service', 4)" class="review-star text-lg sm:text-xl" data-value="4">⭐</button>
+<button onclick="setRating('service', 5)" class="review-star text-lg sm:text-xl" data-value="5">⭐</button>
+</div>
+<p id="serviceRatingText" class="text-xs sm:text-sm text-gray-500 mt-1"> <!-- تقليل الهامش -->
+لم يتم اختيار تقييم
+</p>
+</div>
+<!-- Comment -->
+<div>
+<label class="block text-xs sm:text-sm font-medium mb-1 text-gray-700"> <!-- تقليل الهامش -->
+تعليقك (اختياري)
+</label>
+<textarea id="reviewComment" placeholder="شارك رأيك..." class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border-2 rounded-lg focus:border-[var(--primary-color)] focus:outline-none resize-none text-xs sm:text-sm" rows="3"></textarea> <!-- تقليل عدد الأسطر وحجم النص والـ padding -->
+</div>
+<!-- Submit Button -->
+<button onclick="submitReview()" class="w-full py-1.5 sm:py-2.5 rounded-lg font-semibold text-white transition-transform hover:scale-105 text-sm sm:text-base" style="background-color: var(--primary-color);">
+📤 إرسال التقييم
+</button>
+</div>
+<!-- View Reviews Tab -->
+<div id="reviewViewTab" class="hidden p-3 sm:p-4 max-h-[70vh] overflow-y-auto"> <!-- تقليل padding -->
+<div id="reviewsStats" class="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2 mb-2 sm:mb-4"> <!-- تقليل gap و الهامش -->
+<div class="p-2 sm:p-3 rounded-lg" style="background-color: rgba(var(--primary-color-rgb), 0.1);">
+<p class="text-xs sm:text-xs text-gray-600"> <!-- تقليل حجم النص -->
+متوسط المكان
+</p>
+<p class="text-xl sm:text-2xl font-bold" style="color: var(--primary-color);" id="placeAvg">-</p>
+</div>
+<div class="p-2 sm:p-3 rounded-lg" style="background-color: rgba(var(--primary-color-rgb), 0.1);">
+<p class="text-xs sm:text-xs text-gray-600"> <!-- تقليل حجم النص -->
+متوسط المنتجات
+</p>
+<p class="text-xl sm:text-2xl font-bold" style="color: var(--primary-color);" id="productsAvg">-</p>
+</div>
+<div class="p-2 sm:p-3 rounded-lg" style="background-color: rgba(var(--primary-color-rgb), 0.1);">
+<p class="text-xs sm:text-xs text-gray-600"> <!-- تقليل حجم النص -->
+متوسط المعاملة
+</p>
+<p class="text-xl sm:text-2xl font-bold" style="color: var(--primary-color);" id="serviceAvg">-</p>
+</div>
+</div>
+<div id="reviewsList" class="space-y-2 sm:space-y-3"> <!-- تقليل space -->
+</div>
+</div>
+</div>
+</div>
+<script>
+let SUPABASE_URL = localStorage.getItem('supabaseUrl') || 'https://putgtsdgeyqyptamwpnx.supabase.co';
+let SUPABASE_KEY = localStorage.getItem('supabaseKey') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1dGd0c2RnZXlxeXB0YW13cG54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczODMxMzAsImV4cCI6MjA4Mjk1OTEzMH0.bo30DP6UxtpHSvKTCwtaUmkJR8aT-BNEhyrW35IKsVE';
+let PROJECT_REF = localStorage.getItem('projectRef') || 'putgtsdgeyqyptamwpnx';
+let restaurantId = localStorage.getItem('restaurantId') || null;
+// Build Supabase URL
+if (PROJECT_REF) {
+SUPABASE_URL = `https://${PROJECT_REF}.supabase.co`;
+}
+let allProducts = [];
+let allCategories = [];
+let settings = null;
+let selectedCategoryId = 'all';
+let selectedSection = '';
+let searchTerm = '';
+let filtersExpanded = false;
+let activeFilters = 0;
+// Category icons mapping
+const categoryIcons = {
+'مشروبات': '🥤',
+'أطعمة': '🍽️',
+'حلويات': '🍰',
+'مقبلات': '🥗',
+'ساندوتشات': '🥪',
+'بيتزا': '🍕',
+'برجر': '🍔',
+'دجاج': '🍗',
+'لحوم': '🥩',
+'أسماك': '🐟',
+'معكرونة': '🍝',
+'سلطات': '🥗',
+'شوربات': '🍲',
+'عصائر': '🧃',
+'قهوة': '☕',
+'شاي': '🍵',
+'حلويات شرقية': '🧁',
+'مخبوزات': '🍞',
+'وجبات سريعة': '🍟',
+'default': '🍽️'
+};
+// Helper function to get category icon
+function getCategoryIcon(categoryName) {
+const name = categoryName?.toLowerCase() || '';
+for (const [key, icon] of Object.entries(categoryIcons)) {
+if (name.includes(key.toLowerCase())) {
+return icon;
+}
+}
+return categoryIcons.default;
+}
+// Helper function to get category gradient
+function getCategoryGradient(index) {
+const gradients = [
+'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)'
+];
+return gradients[index % gradients.length];
+}
+const getEl = (id) => document.getElementById(id);
+const setText = (id, value) => {
+const el = getEl(id);
+if (el) {
+el.textContent = value;
+}
+};
+function updateWhatsappButtons(rawNumber) {
+const buttons = document.querySelectorAll('[data-whatsapp-btn]');
+let phone = (rawNumber || '').trim().replace(/\D/g, '');
+if (!phone) {
+buttons.forEach(btn => btn.classList.add('hidden'));
+return;
+}
+if (!phone.startsWith('20')) {
+if (phone.startsWith('0')) {
+phone = '20' + phone.substring(1);
+} else {
+phone = '20' + phone;
+}
+}
+const link = `https://wa.me/${phone}?text=مرحباً`;
+buttons.forEach(btn => {
+btn.href = link;
+btn.classList.remove('hidden');
+});
+}
+// Initialize
+window.addEventListener('DOMContentLoaded', async () => {
+const params = new URLSearchParams(window.location.search);
+const urlRestaurantId = params.get('restaurant_id');
+if (urlRestaurantId) {
+restaurantId = urlRestaurantId;
+localStorage.setItem('restaurantId', restaurantId);
+}
+if (!restaurantId) {
+document.getElementById('loadingScreen').innerHTML = `
+<div class="text-center text-white px-4">
+<svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+</svg>
+<p class="text-xl font-semibold mb-2">لم يتم تحديد المطعم</p>
+<p class="text-sm opacity-90">الرجاء فتح الرابط من خلال لوحة التحكم أو إضافة ?restaurant_id=... للرابط</p>
+</div>
+`;
+return;
+}
+// Check if Supabase is configured
+if (!PROJECT_REF || !SUPABASE_KEY) {
+document.getElementById('loadingScreen').innerHTML = `
+<div class="text-center text-white px-4">
+<svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+</svg>
+<p class="text-xl font-semibold mb-2">لم يتم تكوين النظام بعد</p>
+<p class="text-sm opacity-90">الرجاء الذهاب إلى صفحة admin.html لإعداد البيانات</p>
+</div>
+`;
+return;
+}
+await loadData();
+// Handle browser back button
+window.addEventListener('popstate', function(event) {
+if (event.state && event.state.view === 'products') {
+// User pressed back button from products view
+backToCategories();
+// Replace the history state to prevent going back again
+history.replaceState({ view: 'categories' }, '', window.location.pathname);
+} else if (!event.state) {
+// User pressed back button from categories view - prevent exit
+history.pushState({ view: 'categories' }, '', window.location.pathname);
+return false;
+}
+});
+// Initialize history state
+history.replaceState({ view: 'categories' }, '', window.location.pathname);
+});
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', (e) => {
+searchTerm = e.target.value.toLowerCase();
+updateFilterCounter();
+renderProducts();
+});
+function selectSection(section) {
+selectedSection = section;
+updateFilterCounter();
+renderCategories();
+renderProducts();
+}
+function selectSubsection(section) {
+selectedSection = section;
+updateFilterCounter();
+renderProducts();
+}
+function selectCategory(categoryId) {
+selectedCategoryId = categoryId;
+selectedSection = '';
+// Get the selected category
+const category = categoryId === 'all'
+? { name_ar: 'جميع المنتجات' }
+: allCategories.find(cat => cat.id === categoryId);
+// Update category title
+document.getElementById('selectedCategoryTitle').textContent = category?.name_ar || 'جميع المنتجات';
+// Hide categories view and show products view
+document.getElementById('menuHeader').style.display = 'none';
+document.getElementById('productsView').classList.remove('hidden');
+// Add to history so back button works
+history.pushState({ view: 'products', categoryId: categoryId }, '', `#category-${categoryId}`);
+// Render products
+renderProducts();
+// Scroll to top
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function backToCategories() {
+selectedCategoryId = 'all';
+selectedSection = '';
+// Show categories view and hide products view
+document.getElementById('menuHeader').style.display = 'block';
+document.getElementById('productsView').classList.add('hidden');
+// Update history state
+history.replaceState({ view: 'categories' }, '', window.location.pathname);
+// Scroll to top smoothly
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function updateFilterCounter() {
+activeFilters = 0;
+if (selectedCategoryId !== 'all') activeFilters++;
+if (selectedSection) activeFilters++;
+if (searchTerm) activeFilters++;
+const counter = document.getElementById('filterCounter');
+if (activeFilters > 0) {
+counter.textContent = activeFilters;
+counter.classList.remove('hidden');
+} else {
+counter.classList.add('hidden');
+}
+}
+function clearAllFilters() {
+selectedCategoryId = 'all';
+selectedSection = '';
+searchTerm = '';
+document.getElementById('searchInput').value = '';
+document.getElementById('subsectionFilter').classList.add('hidden');
+updateFilterCounter();
+renderCategories();
+renderProducts();
+}
+async function fetchAPI(endpoint, options = {}) {
+const method = (options.method || 'GET').toUpperCase();
+let resourcePath = endpoint;
+if (method === 'GET' && !/select=/i.test(endpoint)) {
+const separator = endpoint.includes('?') ? '&' : '?';
+resourcePath = `${endpoint}${separator}select=*`;
+}
+const url = `${SUPABASE_URL}/rest/v1/${resourcePath}`;
+try {
+const response = await fetch(url, {
+method: 'GET',
+...options,
+headers: {
+'apikey': SUPABASE_KEY,
+'Authorization': `Bearer ${SUPABASE_KEY}`,
+'Content-Type': 'application/json',
+'Prefer': 'return=representation',
+...options.headers
+}
+});
+if (!response.ok) {
+console.error(`API Error ${response.status}:`, response.statusText);
+throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+}
+const data = await response.json();
+return Array.isArray(data) ? data : [data];
+} catch (error) {
+console.error('Fetch API Error:', error);
+return [];
+}
+}
+// فلتر بحث رئيسي
+function mainSearchFilter() {
+	const val = document.getElementById('mainSearchInput').value.trim().toLowerCase();
+	// إظهار/إخفاء الفئات أو المنتجات حسب البحث
+	let found = false;
+	// بحث في الفئات
+	const cats = document.querySelectorAll('.category-card');
+	cats.forEach(card => {
+		const name = card.querySelector('.category-name')?.textContent?.toLowerCase() || '';
+		if (name.includes(val) || val === '') {
+			card.style.display = '';
+			found = true;
+		} else {
+			card.style.display = 'none';
+		}
+	});
+	// بحث في المنتجات (لو في عرض المنتجات)
+	const prods = document.querySelectorAll('.product-card');
+	prods.forEach(card => {
+		const name = card.querySelector('.product-name')?.textContent?.toLowerCase() || '';
+		if (name.includes(val) || val === '') {
+			card.style.display = '';
+			found = true;
+		} else {
+			card.style.display = 'none';
+		}
+	});
+	// إظهار رسالة إذا لم يوجد نتائج
+	const emptyState = document.getElementById('emptyState');
+	if (!found && emptyState) emptyState.classList.remove('hidden');
+	else if (emptyState) emptyState.classList.add('hidden');
+}
+
+
+async function loadData() {
+try {
+// Load settings
+const settingsData = await fetchAPI(`restaurant_settings?restaurant_id=eq.${restaurantId}`);
+if (settingsData.length > 0) {
+settings = settingsData[0];
+const nameAr = settings.restaurant_name_ar || 'قائمة الطعام';
+const nameEn = settings.restaurant_name_en || '';
+const primaryColor = settings.primary_color || '#D97706';
+setText('restaurantName', nameAr);
+const taglineEl = getEl('restaurantTagline');
+if (taglineEl) {
+if (nameEn.trim()) {
+taglineEl.textContent = nameEn;
+taglineEl.classList.remove('hidden');
+} else {
+taglineEl.classList.add('hidden');
+}
+}
+const logoImg = getEl('restaurantLogo');
+if (logoImg && settings.logo_url) {
+logoImg.src = settings.logo_url;
+logoImg.onerror = function() {
+this.parentElement.classList.add('hidden');
+};
+}
+document.documentElement.style.setProperty('--primary-color', primaryColor);
+const rgb = hexToRgb(primaryColor) || { r: 217, g: 119, b: 6 };
+document.documentElement.style.setProperty('--primary-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+if (settings.whatsapp_number) {
+updateWhatsappButtons(settings.whatsapp_number);
+}
+// Load social media links
+let hasSocial = false;
+if (settings.facebook_url) {
+const fbBtn = getEl('facebookBtn');
+if (fbBtn) {
+fbBtn.href = settings.facebook_url;
+fbBtn.classList.remove('hidden');
+hasSocial = true;
+}
+}
+if (settings.instagram_url) {
+const igBtn = getEl('instagramBtn');
+if (igBtn) {
+igBtn.href = settings.instagram_url;
+igBtn.classList.remove('hidden');
+hasSocial = true;
+}
+}
+if (settings.tiktok_url) {
+const tkBtn = getEl('tiktokBtn');
+if (tkBtn) {
+tkBtn.href = settings.tiktok_url;
+tkBtn.classList.remove('hidden');
+hasSocial = true;
+}
+}
+if (hasSocial) {
+const socialContainer = getEl('socialMediaIcons');
+if (socialContainer) {
+socialContainer.classList.remove('hidden');
+}
+}
+}
+// Load categories
+const categoriesEndpoint = `categories?restaurant_id=eq.${restaurantId}&is_active=eq.true&order=display_order.asc`;
+allCategories = await fetchAPI(categoriesEndpoint);
+renderCategories();
+// Load products
+const productsEndpoint = `products?restaurant_id=eq.${restaurantId}&is_available=eq.true&order=display_order.asc`;
+allProducts = await fetchAPI(productsEndpoint);
+renderProducts();
+// Hide loading screen
+const loadingEl = getEl('loadingScreen');
+if (loadingEl) {
+loadingEl.style.display = 'none';
+}
+} catch (error) {
+console.error('Error loading data:', error);
+const loadingEl = getEl('loadingScreen');
+if (loadingEl) {
+loadingEl.innerHTML = `
+<div class="text-center text-white px-4">
+<svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+</svg>
+<p class="text-xl font-semibold mb-2">حدث خطأ في تحميل البيانات</p>
+<p class="text-sm opacity-90">الرجاء التحقق من الاتصال بالإنترنت أو تحديث الصفحة</p>
+</div>
+`;
+}
+}
+}
+function renderCategories() {
+const container = getEl('categoriesContainer');
+let html = '';
+// Category cards with images and counters
+	allCategories.forEach((cat, index) => {
+		const categoryProducts = allProducts.filter(p => p.category_id === cat.id);
+		const productCount = categoryProducts.length;
+		const icon = getCategoryIcon(cat.name_ar);
+		const animationDelay = index * 80;
+		html += `
+			<div class="category-card${selectedCategoryId === cat.id ? ' active' : ''}"
+				onclick="selectCategory('${cat.id}')"
+				style="--animation-delay: ${animationDelay}ms;">
+				<div class="category-image-wrapper">
+					${cat.image_url ?
+						`<img src=\"${cat.image_url}\" alt=\"${cat.name_ar}\" onerror=\"this.style.display='none'; this.nextElementSibling.style.display='flex';\">\n            <div class=\"category-icon\" style=\"display: none; position: absolute;\">${icon}</div>` :
+						`<div class=\"category-icon\">${icon}</div>`
+					}
+				</div>
+				<div class="category-info">
+					<div class="category-name">${cat.name_ar}</div>
+					<span class="category-badge" title="عدد المنتجات">${productCount}</span>
+				</div>
+			</div>
+		`;
+	});
+container.innerHTML = html;
+}
+function renderProducts() {
+const container = document.getElementById('productsContainer');
+const emptyState = document.getElementById('emptyState');
+// Filter products by selected category only
+const filtered = allProducts.filter(product => {
+if (selectedCategoryId === 'all') return true;
+return product.category_id === selectedCategoryId;
+});
+if (filtered.length === 0) {
+container.innerHTML = '';
+emptyState.classList.remove('hidden');
+return;
+}
+emptyState.classList.add('hidden');
+// Group products by section
+const category = allCategories.find(cat => cat.id === selectedCategoryId);
+const sections = category?.sections || [];
+if (sections.length > 0) {
+// Group by sections
+let html = '';
+sections.forEach((section, sectionIndex) => {
+const sectionProducts = filtered.filter(p => p.section === section);
+if (sectionProducts.length > 0) {
+html += `
+<div class="section-group" style="--animation-delay: ${sectionIndex * 100}ms;">
+<h3 class="section-title">✨ ${section}</h3>
+<div class="products-grid">
+${sectionProducts.map((product, productIndex) => renderProductCard(product, sectionIndex * 10 + productIndex)).join('')}
+</div>
+</div>
+`;
+}
+});
+// Add products without sections
+const noSectionProducts = filtered.filter(p => !p.section);
+if (noSectionProducts.length > 0) {
+html += `
+<div class="section-group" style="--animation-delay: ${sections.length * 100}ms;">
+<div class="products-grid">
+${noSectionProducts.map((product, productIndex) => renderProductCard(product, sections.length * 10 + productIndex)).join('')}
+</div>
+</div>
+`;
+}
+container.innerHTML = html;
+} else {
+// No sections - simple grid
+container.innerHTML = `
+<div class="products-grid">
+${filtered.map((product, index) => renderProductCard(product, index)).join('')}
+</div>
+`;
+}
+}
+function renderProductCard(product, index) {
+const animationDelay = index * 60;
+const imageUrl = product.image_url || '';
+return `
+<article class="product-card" style="--animation-delay: ${animationDelay}ms;">
+<div class="product-image">
+${imageUrl ? `
+<img src="${imageUrl}" alt="${product.name_ar}" onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('hidden');">
+<div class="fallback-thumb hidden">🍽️</div>
+` : `
+<div class="fallback-thumb">🍽️</div>
+`}
+${product.is_featured ? '<span class="badge-featured">⭐ مميز</span>' : ''}
+</div>
+<div class="product-content">
+<div class="product-header">
+<h3 class="product-name">${product.name_ar}</h3>
+${product.name_en ? `<p class="product-name-en">${product.name_en}</p>` : ''}
+</div>
+${product.description_ar ? `<p class="product-description">${product.description_ar}</p>` : ''}
+<div class="product-footer">
+<span></span>
+<div class="price-chip">
+${product.price} <span style="font-size: 0.65rem; font-weight: 400;">${settings?.currency || 'ج.م'}</span> <!-- تقليل حجم وسمك رمز العملة -->
+</div>
+</div>
+</div>
+</article>
+`;
+}
+function hexToRgb(hex) {
+const normalized = hex.replace('#', '');
+if (![3, 6].includes(normalized.length)) return null;
+const value = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+const bigint = parseInt(value, 16);
+if (Number.isNaN(bigint)) return null;
+return {
+r: (bigint >> 16) & 255,
+g: (bigint >> 8) & 255,
+b: bigint & 255
+};
+}
+// Review Management
+let reviewRatings = { place: 0, products: 0, service: 0 };
+function openReviewsModal() {
+document.getElementById('reviewsModal').classList.remove('hidden');
+switchReviewTab('add');
+}
+function closeReviewsModal() {
+document.getElementById('reviewsModal').classList.add('hidden');
+resetReviewForm();
+}
+function switchReviewTab(tab) {
+const addTab = document.getElementById('reviewAddTab');
+const viewTab = document.getElementById('reviewViewTab');
+const tabAddBtn = document.getElementById('reviewTabAdd');
+const tabViewBtn = document.getElementById('reviewTabView');
+if (tab === 'add') {
+addTab.classList.remove('hidden');
+viewTab.classList.add('hidden');
+tabAddBtn.style.borderColor = 'var(--primary-color)';
+tabAddBtn.style.color = 'var(--primary-color)';
+tabViewBtn.style.borderColor = 'transparent';
+tabViewBtn.classList.add('text-gray-600');
+} else {
+addTab.classList.add('hidden');
+viewTab.classList.remove('hidden');
+tabAddBtn.style.borderColor = 'transparent';
+tabAddBtn.classList.add('text-gray-600');
+tabViewBtn.style.borderColor = 'var(--primary-color)';
+tabViewBtn.style.color = 'var(--primary-color)';
+tabViewBtn.classList.remove('text-gray-600');
+loadAndDisplayReviews();
+}
+}
+function setRating(type, value) {
+reviewRatings[type] = value;
+const container = document.getElementById(`${type}RatingContainer`);
+const buttons = container.querySelectorAll('.review-star');
+buttons.forEach((btn, idx) => {
+if (idx < value) {
+btn.classList.add('active');
+} else {
+btn.classList.remove('active');
+}
+});
+const ratingTexts = {
+1: '😞 سيء',
+2: '😐 مقبول',
+3: '🙂 جيد',
+4: '😊 جيد جداً',
+5: '🤩 ممتاز'
+};
+document.getElementById(`${type}RatingText`).textContent = ratingTexts[value];
+}
+async function submitReview() {
+const name = document.getElementById('reviewName').value.trim();
+const phone = document.getElementById('reviewPhone').value.trim();
+const governorate = document.getElementById('reviewGovernorate').value.trim();
+const city = document.getElementById('reviewCity').value.trim();
+const comment = document.getElementById('reviewComment').value.trim();
+// Validation
+if (!name || !phone || !governorate || !city) {
+alert('⚠️ الرجاء ملء جميع البيانات المطلوبة');
+return;
+}
+if (reviewRatings.place === 0 || reviewRatings.products === 0 || reviewRatings.service === 0) {
+alert('⚠️ الرجاء تقييم جميع العناصر');
+return;
+}
+// Validate phone format
+if (!/^\d{10,15}$/.test(phone.replace(/\D/g, ''))) {
+alert('⚠️ رقم الهاتف غير صحيح');
+return;
+}
+try {
+const response = await fetchAPI('reviews', {
+method: 'POST',
+body: JSON.stringify({
+customer_name: name,
+customer_phone: phone.replace(/\D/g, ''),
+customer_governorate: governorate,
+customer_city: city,
+place_rating: reviewRatings.place,
+products_rating: reviewRatings.products,
+service_rating: reviewRatings.service,
+comment: comment || null,
+restaurant_id: restaurantId
+})
+});
+alert('✅ شكراً لتقييمك! سيتم عرضه بعد المراجعة');
+resetReviewForm();
+closeReviewsModal();
+} catch (error) {
+console.error('Error submitting review:', error);
+alert('❌ حدث خطأ في إرسال التقييم');
+}
+}
+async function loadAndDisplayReviews() {
+try {
+const reviews = await fetchAPI(`reviews?restaurant_id=eq.${restaurantId}&is_approved=eq.true&order=created_at.desc`);
+if (reviews.length === 0) {
+document.getElementById('reviewsList').innerHTML = '<p class="text-center text-gray-500">لا توجد تقييمات حالياً</p>';
+return;
+}
+// Calculate averages
+const placeAvg = (reviews.reduce((sum, r) => sum + r.place_rating, 0) / reviews.length).toFixed(1);
+const productsAvg = (reviews.reduce((sum, r) => sum + r.products_rating, 0) / reviews.length).toFixed(1);
+const serviceAvg = (reviews.reduce((sum, r) => sum + r.service_rating, 0) / reviews.length).toFixed(1);
+document.getElementById('placeAvg').textContent = placeAvg;
+document.getElementById('productsAvg').textContent = productsAvg;
+document.getElementById('serviceAvg').textContent = serviceAvg;
+// Display reviews
+const reviewsHTML = reviews.map(review => `
+<div class="review-item" style="border-left-color: var(--primary-color);">
+<div class="flex justify-between items-start mb-1">
+<div>
+<p class="font-bold text-gray-800 text-sm">${review.customer_name}</p> <!-- تقليل حجم النص -->
+<p class="text-xs text-gray-500">${review.customer_city} • ${review.customer_governorate}</p>
+</div>
+<p class="text-xs text-gray-400">${new Date(review.created_at).toLocaleDateString('ar-EG')}</p>
+</div>
+<div class="grid grid-cols-3 gap-1 mb-2 text-xs"> <!-- تقليل حجم النص والـ gap -->
+<div>
+<p class="text-xs text-gray-600">المكان</p>
+<div class="review-rating">${'⭐'.repeat(review.place_rating)}</div>
+</div>
+<div>
+<p class="text-xs text-gray-600">المنتجات</p>
+<div class="review-rating">${'⭐'.repeat(review.products_rating)}</div>
+</div>
+<div>
+<p class="text-xs text-gray-600">المعاملة</p>
+<div class="review-rating">${'⭐'.repeat(review.service_rating)}</div>
+</div>
+</div>
+${review.comment ? `<p class="text-sm text-gray-700 text-sm">"${review.comment}"</p>` : ''}
+</div>
+`).join('');
+document.getElementById('reviewsList').innerHTML = reviewsHTML;
+} catch (error) {
+console.error('Error loading reviews:', error);
+document.getElementById('reviewsList').innerHTML = '<p class="text-center text-red-500">خطأ في تحميل التقييمات</p>';
+}
+}
+function resetReviewForm() {
+document.getElementById('reviewName').value = '';
+document.getElementById('reviewPhone').value = '';
+document.getElementById('reviewGovernorate').value = '';
+document.getElementById('reviewCity').value = '';
+document.getElementById('reviewComment').value = '';
+reviewRatings = { place: 0, products: 0, service: 0 };
+document.querySelectorAll('.review-star').forEach(star => star.classList.remove('active'));
+document.getElementById('placeRatingText').textContent = 'لم يتم اختيار تقييم';
+document.getElementById('productsRatingText').textContent = 'لم يتم اختيار تقييم';
+document.getElementById('serviceRatingText').textContent = 'لم يتم اختيار تقييم';
+}
+</script>
+<!-- Load configuration and database modules -->
+<script src="config.js"></script>
+<script src="database.js"></script>
+</body>
+</html>
