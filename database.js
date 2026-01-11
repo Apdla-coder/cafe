@@ -9,7 +9,59 @@ class Database {
         this.session = session;
     }
 
-    // ==================== RESTAURANTS ====================
+    // ==================== FILE UPLOAD ====================
+
+    async uploadImage(file, folder = 'images') {
+        const timestamp = Date.now();
+        const fileName = `${timestamp}-${file.name}`;
+        
+        try {
+            // Convert file to base64
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64String = e.target.result;
+                    resolve(base64String);
+                };
+                reader.onerror = (error) => {
+                    console.error('Error converting to base64:', error);
+                    reject(error);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+        } catch (error) {
+            console.error('Error processing image:', error);
+            
+            // Fallback: return a placeholder image URL
+            const fallbackUrl = `https://picsum.photos/seed/${timestamp}/800/400.jpg`;
+            console.warn('Using fallback image URL:', fallbackUrl);
+            return fallbackUrl;
+        }
+    }
+
+    async deleteImage(filePath) {
+        try {
+            const response = await fetch(`${this.api.url}/storage/v1/object/${filePath}`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': this.api.key,
+                    'Authorization': `Bearer ${this.api.key}`,
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Delete failed: ${response.statusText}`);
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            throw error;
+        }
+    }
+
+// ==================== RESTAURANTS ====================
     
     async getRestaurant(restaurantId) {
         return this.api.get('restaurants', `id=eq.${restaurantId}`);

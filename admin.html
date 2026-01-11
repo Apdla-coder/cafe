@@ -346,19 +346,55 @@
                 <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
                     <h2 class="text-xl md:text-2xl font-bold mb-4">📱 وسائل التواصل الاجتماعي</h2>
                     <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium mb-2">📘 فيسبوك</label>
-                                <input type="text" id="restFacebook" placeholder="https://facebook.com/yourpage" class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
+                                <label for="primaryColor" class="block text-sm font-medium text-gray-700 mb-1">🎨 اللون الأساسي</label>
+                                <input type="color" id="primaryColor" name="primary_color" class="w-full h-12 p-1 border-gray-300 rounded-lg cursor-pointer">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium mb-2">📸 إنستجرام</label>
-                                <input type="text" id="restInstagram" placeholder="https://instagram.com/yourpage" class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
+                                <label for="currency" class="block text-sm font-medium text-gray-700 mb-1">💵 العملة</label>
+                                <input type="text" id="currency" name="currency" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm" placeholder="e.g., ج.م, ريال"> 
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2">🎵 تيك توك</label>
-                                <input type="text" id="restTiktok" placeholder="https://tiktok.com/@yourpage" class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-800">🖼️ بانر الإعلانات (حد أقصى 3 صور)</h3>
+                            <div class="p-4 border rounded-lg bg-gray-50 space-y-4">
+                                <div id="adBannersPreviewContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[100px]">
+                                    <!-- Image previews will be injected here -->
+                                </div>
+                                <div>
+                                    <label for="adBannerFiles" class="block text-sm font-medium text-gray-700 mb-1">رفع صور جديدة</label>
+                                    <input type="file" id="adBannerFiles" accept="image/*" multiple onchange="handleBannerImageUpload(this.files)" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"/>
+                                    <p class="text-xs text-gray-500 mt-1">يمكنك تحديد أكثر من صورة في المرة الواحدة.</p>
+                                </div>
                             </div>
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-800">📱 روابط الإعلانات من وسائل التواصل الاجتماعي</h3>
+                            <div class="p-4 border rounded-lg bg-gray-50 space-y-4">
+                                <div>
+                                    <label for="socialAdImage" class="block text-sm font-medium text-gray-700 mb-1">📸 رابط إعلان صورة (إنستجرام/فيسبوك/غيرها)</label>
+                                    <input type="url" id="socialAdImage" placeholder="https://instagram.com/p/..." class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none text-sm"/>
+                                    <p class="text-xs text-gray-500 mt-1">سيتم عرض هذه الصورة في البانر إذا تم إدخال الرابط</p>
+                                </div>
+                                <div>
+                                    <label for="socialAdVideo" class="block text-sm font-medium text-gray-700 mb-1">🎥 رابط إعلان فيديو (تيك توك/انستجرام/يوتيوب/غيرها)</label>
+                                    <input type="url" id="socialAdVideo" placeholder="https://tiktok.com/@..." class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none text-sm"/>
+                                    <p class="text-xs text-gray-500 mt-1">سيتم عرض هذا الفيديو في البانر إذا تم إدخال الرابط</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">📘 فيسبوك</label>
+                            <input type="text" id="restFacebook" placeholder="https://facebook.com/yourpage" class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">📸 إنستجرام</label>
+                            <input type="text" id="restInstagram" placeholder="https://instagram.com/yourpage" class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">🎵 تيك توك</label>
+                            <input type="text" id="restTiktok" placeholder="https://tiktok.com/@yourpage" class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
                         </div>
                     </div>
                 </div>
@@ -457,7 +493,7 @@
 
                 <!-- Save Button -->
                 <div class="bg-white rounded-lg shadow-md p-4 md:p-6 flex gap-3">
-                    <button onclick="updateSettings()" class="bg-amber-600 text-white px-8 py-3 rounded-lg hover:bg-amber-700 font-semibold flex items-center gap-2 transition-colors">
+                    <button onclick="saveSettings()" class="bg-amber-600 text-white px-8 py-3 rounded-lg hover:bg-amber-700 font-semibold flex items-center gap-2 transition-colors">
                         💾 حفظ جميع الإعدادات
                     </button>
                     <button onclick="resetSettings()" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 font-semibold transition-colors">
@@ -476,20 +512,14 @@
 
                     <!-- Filter Buttons -->
                     <div class="flex flex-wrap gap-2 mb-6">
-                        <button onclick="filterReviews('all')" id="filterAll" class="px-4 py-2 rounded-lg bg-amber-100 text-amber-700 font-semibold border border-amber-300">
-                            📊 الكل
-                        </button>
-                        <button onclick="filterReviews('pending')" id="filterPending" class="px-4 py-2 rounded-lg bg-yellow-100 text-yellow-700 font-semibold border border-yellow-300">
-                            ⏳ قيد المراجعة
-                        </button>
-                        <button onclick="filterReviews('approved')" id="filterApproved" class="px-4 py-2 rounded-lg bg-green-100 text-green-700 font-semibold border border-green-300">
-                            ✅ موافق عليه
-                        </button>
+                        <button onclick="filterReviews('all')" id="filterAllBtn" class="px-4 py-2 rounded-lg bg-amber-100 text-amber-700 font-semibold border border-amber-300 ring-2 ring-amber-500 ring-offset-2">📊 الكل</button>
+                        <button onclick="filterReviews('pending')" id="filterPendingBtn" class="px-4 py-2 rounded-lg bg-yellow-100 text-yellow-700 font-semibold border border-yellow-300">⏳ قيد المراجعة</button>
+                        <button onclick="filterReviews('approved')" id="filterApprovedBtn" class="px-4 py-2 rounded-lg bg-green-100 text-green-700 font-semibold border border-green-300">✅ موافق عليه</button>
                     </div>
 
                     <!-- Reviews List -->
-                    <div id="reviewsList" class="space-y-4">
-                        <p class="text-center text-gray-500 py-8">جاري تحميل التقييمات...</p>
+                    <div id="reviewsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Review cards will be injected here -->
                     </div>
                 </div>
             </div>

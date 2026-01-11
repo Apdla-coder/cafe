@@ -7,7 +7,7 @@
 const SUPABASE_CONFIG = {
     URL: localStorage.getItem('supabaseUrl') || 'https://putgtsdgeyqyptamwpnx.supabase.co',
     KEY: localStorage.getItem('supabaseKey') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1dGd0c2RnZXlxeXB0YW13cG54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczODMxMzAsImV4cCI6MjA4Mjk1OTEzMH0.bo30DP6UxtpHSvKTCwtaUmkJR8aT-BNEhyrW35IKsVE',
-    TIMEOUT: 10000 // 10 seconds
+    TIMEOUT: 30000 // 30 seconds
 };
 
 // API Helper Functions
@@ -45,6 +45,12 @@ class SupabaseAPI {
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Error response:', errorText);
+                
+                // Check if it's a payload too large error
+                if (errorText.includes('payload too large') || response.status === 413) {
+                    throw new Error('PAYLOAD_TOO_LARGE');
+                }
+                
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 

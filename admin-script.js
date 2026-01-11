@@ -6,6 +6,7 @@
 var allCategories = [];
 var allProducts = [];
 var restaurantSettings = null;
+let bannerImageUrls = []; // To hold banner image URLs
 
 document.addEventListener('DOMContentLoaded', async function() {
     loading.init();
@@ -334,43 +335,36 @@ function updateReviewsList(reviews) {
     const container = document.getElementById('reviewsList');
     if (!container) return;
 
+    document.getElementById('reviewsCount').textContent = reviews.length;
+
     if (!reviews || reviews.length === 0) {
-        container.innerHTML = '<p class="text-gray-500 text-center py-8">لا توجد تقييمات</p>';
-        document.getElementById('reviewsCount').textContent = '0';
+        container.innerHTML = '<p class="text-gray-500 text-center py-12 col-span-full">لا توجد تقييمات تطابق هذا الفلتر.</p>';
         return;
     }
 
-    document.getElementById('reviewsCount').textContent = reviews.length;
-
     container.innerHTML = reviews.map(r => `
-        <div class="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition">
-            <div class="flex justify-between items-start mb-3">
-                <div>
-                    <h4 class="font-bold">${r.customer_name}</h4>
-                    <p class="text-sm text-gray-500">${r.customer_phone}</p>
+        <div class="border rounded-lg p-4 flex flex-col ${r.is_approved ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}">
+            <div class="flex-1">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h4 class="font-bold text-gray-800">${r.customer_name}</h4>
+                        <p class="text-sm text-gray-500">${r.customer_phone}</p>
+                        <p class="text-xs text-gray-400">${r.customer_governorate || ''} - ${r.customer_city || ''}</p>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full font-medium ${r.is_approved ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}">
+                        ${r.is_approved ? 'موافق عليه' : 'قيد الانتظار'}
+                    </span>
                 </div>
-                <span class="text-xs px-3 py-1 rounded ${r.is_approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                    ${r.is_approved ? '✅ موافق عليه' : '⏳ قيد الانتظار'}
-                </span>
+                <div class="grid grid-cols-3 gap-2 mb-3 text-sm text-center">
+                    <div><p class="text-gray-600">المكان</p><p class="font-bold">${'★'.repeat(r.place_rating)}<span class="text-gray-300">${'★'.repeat(5 - r.place_rating)}</span></p></div>
+                    <div><p class="text-gray-600">المنتجات</p><p class="font-bold">${'★'.repeat(r.products_rating)}<span class="text-gray-300">${'★'.repeat(5 - r.products_rating)}</span></p></div>
+                    <div><p class="text-gray-600">الخدمة</p><p class="font-bold">${'★'.repeat(r.service_rating)}<span class="text-gray-300">${'★'.repeat(5 - r.service_rating)}</span></p></div>
+                </div>
+                ${r.comment ? `<p class="text-gray-700 mb-4 p-3 bg-white rounded-md border text-sm">${r.comment}</p>` : ''}
             </div>
-            <div class="grid grid-cols-3 gap-2 mb-3 text-sm">
-                <div class="text-center">
-                    <p class="text-gray-600">المطعم</p>
-                    <p class="font-bold">⭐ ${r.place_rating}</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-gray-600">المنتجات</p>
-                    <p class="font-bold">⭐ ${r.products_rating}</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-gray-600">الخدمة</p>
-                    <p class="font-bold">⭐ ${r.service_rating}</p>
-                </div>
-            </div>
-            ${r.comment ? `<p class="text-gray-700 mb-3">"${r.comment}"</p>` : ''}
-            <div class="flex gap-2">
-                ${!r.is_approved ? `<button onclick="approveReview('${r.id}')" class="flex-1 bg-green-600 text-white py-1 rounded text-sm hover:bg-green-700">✅ موافق</button>` : ''}
-                <button onclick="deleteReview('${r.id}')" class="flex-1 bg-red-600 text-white py-1 rounded text-sm hover:bg-red-700">🗑️ حذف</button>
+            <div class="flex gap-2 mt-auto">
+                ${!r.is_approved ? `<button onclick="approveReview('${r.id}')" class="flex-1 bg-green-600 text-white py-1.5 rounded text-sm font-semibold hover:bg-green-700 transition-colors">✅ موافقة</button>` : ''}
+                <button onclick="deleteReview('${r.id}')" class="flex-1 bg-red-600 text-white py-1.5 rounded text-sm font-semibold hover:bg-red-700 transition-colors">🗑️ حذف</button>
             </div>
         </div>
     `).join('');
@@ -417,14 +411,18 @@ function updateSettingsForm() {
     
     document.getElementById('restNameAr').value = restaurantSettings.restaurant_name_ar || '';
     document.getElementById('restNameEn').value = restaurantSettings.restaurant_name_en || '';
-    document.getElementById('restCurrency').value = restaurantSettings.currency || 'ج.م';
-    document.getElementById('restPrimaryColor').value = primaryColor;
-    document.getElementById('restPrimaryColorHex').value = primaryColor;
+    document.getElementById('currency').value = restaurantSettings.currency || 'ج.م';
+    document.getElementById('primaryColor').value = primaryColor;
+    document.getElementById('restPrimaryColorHex').value = restaurantSettings.primary_color || '#D97706';
+    bannerImageUrls = Array.isArray(restaurantSettings.ad_banner_urls) ? restaurantSettings.ad_banner_urls : [];
+    renderBannerPreviews();
     document.getElementById('restLogo').value = restaurantSettings.logo_url || '';
     document.getElementById('restFacebook').value = restaurantSettings.facebook_url || '';
     document.getElementById('restInstagram').value = restaurantSettings.instagram_url || '';
     document.getElementById('restTiktok').value = restaurantSettings.tiktok_url || '';
     document.getElementById('restWhatsapp').value = restaurantSettings.whatsapp_number || '';
+    document.getElementById('socialAdImage').value = restaurantSettings.social_ad_image || '';
+    document.getElementById('socialAdVideo').value = restaurantSettings.social_ad_video || '';
 
     updateColorPreview(primaryColor);
     updateLogoPreview(restaurantSettings.logo_url || '');
@@ -621,14 +619,19 @@ async function toggleProduct(productId, isAvailable) {
 async function saveSettings() {
     const nameAr = document.getElementById('restNameAr').value.trim();
     const nameEn = document.getElementById('restNameEn').value.trim();
-    const currency = document.getElementById('restCurrency').value;
+    const currency = document.getElementById('currency').value;
     const primaryColor = document.getElementById('restPrimaryColor').value;
     const logo = document.getElementById('restLogo').value;
     const facebook = document.getElementById('restFacebook').value;
     const instagram = document.getElementById('restInstagram').value;
     const tiktok = document.getElementById('restTiktok').value;
     const whatsapp = document.getElementById('restWhatsapp').value;
-
+    const socialAdImage = document.getElementById('socialAdImage').value;
+    const socialAdVideo = document.getElementById('socialAdVideo').value;
+    
+    // Process banner images - allow all images
+    let processedBannerUrls = [...bannerImageUrls];
+    
     if (!nameAr) {
         utils.notify('⚠️ الرجاء إدخال اسم المطعم بالعربي', 'error');
         return;
@@ -646,7 +649,10 @@ async function saveSettings() {
                 facebook_url: facebook,
                 instagram_url: instagram,
                 tiktok_url: tiktok,
-                whatsapp_number: whatsapp
+                whatsapp_number: whatsapp,
+                ad_banner_urls: processedBannerUrls,
+                social_ad_image: socialAdImage,
+                social_ad_video: socialAdVideo
             });
         } else {
             await db.createSettings({
@@ -658,7 +664,10 @@ async function saveSettings() {
                 facebook_url: facebook,
                 instagram_url: instagram,
                 tiktok_url: tiktok,
-                whatsapp_number: whatsapp
+                whatsapp_number: whatsapp,
+                ad_banner_urls: processedBannerUrls,
+                social_ad_image: socialAdImage,
+                social_ad_video: socialAdVideo
             });
         }
 
@@ -666,7 +675,12 @@ async function saveSettings() {
         await loadAllData();
     } catch (error) {
         console.error('Error saving settings:', error);
-        utils.notify('❌ خطأ في حفظ الإعدادات', 'error');
+        
+        if (error.message === 'PAYLOAD_TOO_LARGE') {
+            utils.notify('❌ الصور كبيرة جدًا. الرجاء استخدام صور أصغر حجمًا.', 'error');
+        } else {
+            utils.notify('❌ خطأ في حفظ الإعدادات', 'error');
+        }
     } finally {
         loading.hide();
     }
@@ -701,6 +715,64 @@ async function deleteReview(reviewId) {
         utils.notify('❌ خطأ في حذف التقييم', 'error');
     } finally {
         loading.hide();
+    }
+}
+
+// ==================== BANNER IMAGE HANDLING ====================
+
+async function handleBannerImageUpload(files) {
+    if (!files || files.length === 0) return;
+
+    const totalImages = bannerImageUrls.length + files.length;
+    if (totalImages > 3) {
+        utils.notify('⚠️ لا يمكن إضافة أكثر من 3 صور للبانر.', 'error');
+        return;
+    }
+
+    loading.show('جارٍ رفع الصور...');
+    try {
+        console.log('Starting upload for', files.length, 'files');
+        for (const file of files) {
+            console.log('Uploading file:', file.name, 'Size:', file.size);
+            const imageUrl = await db.uploadImage(file, 'banners');
+            console.log('Upload result:', imageUrl ? 'SUCCESS' : 'FAILED');
+            if (imageUrl) {
+                bannerImageUrls.push(imageUrl);
+                console.log('Added to banner URLs. Total:', bannerImageUrls.length);
+            }
+        }
+        renderBannerPreviews();
+        utils.notify('✅ تم رفع الصور بنجاح! لا تنسَ الضغط على "حفظ الإعدادات" لحفظها.', 'success');
+    } catch (error) {
+        console.error('Error uploading banner images:', error);
+        utils.notify('❌ خطأ في رفع الصور.', 'error');
+    } finally {
+        document.getElementById('adBannerFiles').value = ''; // Reset file input
+        loading.hide();
+    }
+}
+
+function renderBannerPreviews() {
+    const container = document.getElementById('adBannersPreviewContainer');
+    if (!container) return;
+
+    if (bannerImageUrls.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-sm text-center col-span-full">لم يتم رفع أي صور بعد.</p>';
+        return;
+    }
+
+    container.innerHTML = bannerImageUrls.map((url, index) => `
+        <div class="relative group">
+            <img src="${url}" class="w-full h-24 object-cover rounded-md border">
+            <button onclick="deleteBannerImage(${index})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">X</button>
+        </div>
+    `).join('');
+}
+
+function deleteBannerImage(index) {
+    if (confirm('هل تريد حذف هذه الصورة؟')) {
+        bannerImageUrls.splice(index, 1);
+        renderBannerPreviews();
     }
 }
 
@@ -1310,54 +1382,6 @@ function darkenColor(hex, percent) {
 
 // ==================== SETTINGS ====================
 
-async function updateSettings() {
-    const nameAr = document.getElementById('restNameAr').value.trim();
-    const nameEn = document.getElementById('restNameEn').value.trim();
-    const currency = document.getElementById('restCurrency').value.trim();
-    const primaryColor = document.getElementById('restPrimaryColor').value;
-    const logo = document.getElementById('restLogo').value.trim();
-    const facebook = document.getElementById('restFacebook').value.trim();
-    const instagram = document.getElementById('restInstagram').value.trim();
-    const tiktok = document.getElementById('restTiktok').value.trim();
-    const whatsapp = document.getElementById('restWhatsapp').value.trim();
-
-    if (!nameAr) {
-        utils.notify('⚠️ الرجاء إدخال اسم المطعم بالعربي', 'error');
-        return;
-    }
-
-    loading.show();
-    try {
-        // استخدم CSS المولد تلقائياً أو قيمة فارغة
-        const customCss = window.generatedCustomCss || '';
-        const settingsData = {
-            restaurant_name_ar: nameAr,
-            restaurant_name_en: nameEn || null,
-            currency: currency || 'ج.م',
-            primary_color: primaryColor || '#D97706',
-            logo_url: logo || null,
-            facebook_url: facebook || null,
-            instagram_url: instagram || null,
-            tiktok_url: tiktok || null,
-            whatsapp_number: whatsapp || null
-        };
-
-        if (restaurantSettings && restaurantSettings.id) {
-            await db.updateSettings(restaurantSettings.id, settingsData);
-        } else {
-            await db.createSettings(settingsData);
-        }
-
-        utils.notify('✅ تم حفظ الإعدادات بنجاح', 'success');
-        await loadAllData();
-    } catch (error) {
-        console.error('Error saving settings:', error);
-        utils.notify('❌ خطأ في حفظ الإعدادات', 'error');
-    } finally {
-        loading.hide();
-    }
-}
-
 function resetSettings() {
     if (confirm('⚠️ هل تريد إعادة تعيين جميع الإعدادات إلى القيم السابقة؟')) {
         updateSettingsForm();
@@ -1418,65 +1442,29 @@ function filterProducts() {
 }
 
 function filterReviews(filter) {
-    const container = document.getElementById('reviewsList');
-    if (!container) return;
-
-    let filtered = Array.isArray(allReviews) ? [...allReviews] : [];
+    let filtered = allReviews;
 
     if (filter === 'pending') {
-        filtered = filtered.filter(r => !r.is_approved);
+        filtered = allReviews.filter(r => !r.is_approved);
     } else if (filter === 'approved') {
-        filtered = filtered.filter(r => r.is_approved);
+        filtered = allReviews.filter(r => r.is_approved);
     }
 
-    // Update filter buttons
+    updateReviewsList(filtered);
+
+    // Update filter button styles
     ['all', 'pending', 'approved'].forEach(f => {
-        const btn = document.getElementById(`filter${f.charAt(0).toUpperCase() + f.slice(1)}`);
+        const btn = document.getElementById(`filter${f.charAt(0).toUpperCase() + f.slice(1)}Btn`);
         if (btn) {
-            btn.classList.remove('ring-2', 'ring-offset-2');
+            btn.classList.remove('ring-2', 'ring-offset-2', 'ring-amber-500', 'ring-yellow-500', 'ring-green-500');
             if (f === filter) {
-                btn.classList.add('ring-2', 'ring-offset-2');
+                let ringColor = 'ring-amber-500';
+                if (f === 'pending') ringColor = 'ring-yellow-500';
+                if (f === 'approved') ringColor = 'ring-green-500';
+                btn.classList.add('ring-2', 'ring-offset-2', ringColor);
             }
         }
     });
-
-    if (filtered.length === 0) {
-        container.innerHTML = '<p class="text-center text-gray-500 py-8">لا توجد تقييمات</p>';
-        return;
-    }
-
-    container.innerHTML = filtered.map(r => `
-        <div class="border rounded-lg p-4 ${r.is_approved ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'}">
-            <div class="flex justify-between items-start mb-3">
-                <div>
-                    <h4 class="font-bold">${r.customer_name}</h4>
-                    <p class="text-sm text-gray-500">${r.customer_phone}</p>
-                </div>
-                <span class="text-xs px-3 py-1 rounded ${r.is_approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                    ${r.is_approved ? '✅ موافق عليه' : '⏳ قيد الانتظار'}
-                </span>
-            </div>
-            <div class="grid grid-cols-3 gap-2 mb-3 text-sm">
-                <div class="text-center">
-                    <p class="text-gray-600">المكان</p>
-                    <p class="font-bold">⭐ ${r.place_rating || 0}</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-gray-600">المنتجات</p>
-                    <p class="font-bold">⭐ ${r.products_rating || 0}</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-gray-600">الخدمة</p>
-                    <p class="font-bold">⭐ ${r.service_rating || 0}</p>
-                </div>
-            </div>
-            ${r.comment ? `<p class="text-gray-700 mb-3 italic">"${r.comment}"</p>` : ''}
-            <div class="flex gap-2">
-                ${!r.is_approved ? `<button onclick="approveReview('${r.id}')" class="flex-1 bg-green-600 text-white py-1 rounded text-sm hover:bg-green-700">✅ موافق</button>` : ''}
-                <button onclick="deleteReview('${r.id}')" class="flex-1 bg-red-600 text-white py-1 rounded text-sm hover:bg-red-700">🗑️ حذف</button>
-            </div>
-        </div>
-    `).join('');
 }
 
 // ==================== INITIALIZE LISTS ====================
